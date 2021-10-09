@@ -1,7 +1,12 @@
-import type { NextPage } from 'next'
-import styles from '../styles/Main.module.css'
+import type { NextPage } from 'next';
+import StockHelper from '../lib/StockHelper';
+import styles from '../styles/Main.module.css';
 
-const Home: NextPage = () => {
+const Index: NextPage = () => {
+  const stockHelper = new StockHelper();
+  const stockData = stockHelper.fetchStockData();
+  console.log(stockData);
+
   return (
     <div>
       <main className={styles.main}>
@@ -11,4 +16,4 @@ const Home: NextPage = () => {
   )
 }
 
-export default Home
+export default Index;
