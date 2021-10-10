@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { credentials } from '../money-talk-credentials';
+import { credentials } from '../credentials';
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
 export const getAuthClient = async () => {

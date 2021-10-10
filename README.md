@@ -1,1 +1,1 @@
-### Stocks Data + Sound and Visual
+### Stonks Data + Sound and Visual
