@@ -33,8 +33,5 @@ yarn-error.log*
 # vercel
 .vercel
 
-#tutorial
-tutorial.txt
-
 #credentials
 money-talk-credentials.ts
