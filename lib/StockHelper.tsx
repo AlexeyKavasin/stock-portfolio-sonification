@@ -1,20 +1,10 @@
 // get and transform stock data
-
-const MOCKED_STOCK_DATA = [
-  {
-    ticker: 'MSFT',
-    change: 0,
-    share: 10,
-  },
-  {
-    ticker: 'NEE',
-    change: -0.7,
-    share: 3,
-  }
-];
+// data doesn't change on saturdays and sundays, no need to fetch
+import { getApiClient, getSheetsData } from '../utils/googlesheetapi';
 
 export default class StockHelper {
   private static instance: StockHelper;
+  private apiClient: any;
 
   constructor() {
     if (StockHelper.instance) {
@@ -24,7 +14,13 @@ export default class StockHelper {
     StockHelper.instance = this;
   }
 
-  fetchStockData() {
-    return MOCKED_STOCK_DATA;
+  async initializeApiClient() {
+    this.apiClient = await getApiClient();
+  }
+
+  async fetchStockData() {
+    const [sheet] = await getSheetsData(this.apiClient);
+
+    return sheet.data;
   }
 }

@@ -35,3 +35,6 @@ yarn-error.log*
 
 #tutorial
 tutorial.txt
+
+#credentials
+money-talk-credentials.ts
