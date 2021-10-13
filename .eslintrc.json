@@ -1,6 +1,13 @@
 {
   "extends": "next/core-web-vitals",
   "rules": {
-    "quotes": ["error", "single", { "avoidEscape": true }]
+    "indent": ["error", 2],
+    "eqeqeq": ["error", "always"],
+    "quotes": ["error", "single", { "avoidEscape": true }],
+    "object-shorthand": ["error", "always"],
+    "prefer-destructuring": ["error", {"object": true, "array": false}],
+    "default-param-last": ["error"],
+    "no-param-reassign": "error",
+    "dot-notation": "error"
   }
 }

@@ -21,8 +21,8 @@ const Index: NextPage = ({ data }: any) => {
               return <li
                 key={`stock-${s.ticker}`}
                 className={`${styles.stockListItem} ${s.changePct.startsWith('+') ? styles.green : styles.red}`}>
-                  {s.ticker} {s.changePct}%
-                </li>;
+                {s.ticker} {s.changePct}%
+              </li>;
             })}
           </ul>
         </footer>
