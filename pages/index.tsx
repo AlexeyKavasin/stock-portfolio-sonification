@@ -20,7 +20,7 @@ const Index: NextPage = ({ data }: any) => {
             {stockData.map((s) => {
               return <li
                 key={`stock-${s.ticker}`}
-                className={`${styles.stockListItem} ${s.changePct.startsWith('+') ? styles.green : styles.red}`}>
+                className={`${styles.stockListItem} ${s.changePct >= 0 ? styles.green : styles.red}`}>
                 {s.ticker} {s.changePct}%
               </li>;
             })}
@@ -38,7 +38,7 @@ export async function getStaticProps() {
     props: {
       data: await stockHelper.fetchStockData(),
     },
-    revalidate: 60,
+    revalidate: 10,
   };
 }
 

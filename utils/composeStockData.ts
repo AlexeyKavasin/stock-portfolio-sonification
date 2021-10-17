@@ -8,8 +8,9 @@ export interface IGoogleRowValue {
 
 export interface IStockData {
   ticker: string;
-  changePct: string;
-  share: string;
+  changePct: number;
+  share: number;
+  price: number;
 }
 
 export function composeStockData(rows: any): IStockData[] {
@@ -19,14 +20,15 @@ export function composeStockData(rows: any): IStockData[] {
 
   return rows.reduce((acc: IGoogleRow[], item: IGoogleRow) => {
     const ticker = item.values[0].formattedValue;
-    const changePct = item.values[3].formattedValue;
-    const share = item.values[7].formattedValue;
-
+    const changePct = Number(item.values[3].formattedValue?.replace(',', '.'));
+    const price = Number(item.values[5].formattedValue?.replace(',', '.'));
+    const share = Number(item.values[7].formattedValue?.replace(',', '.'));
     
     return [...acc, {
       ticker,
-      changePct: changePct && changePct.startsWith('-') ? changePct : `+${changePct}`,
-      share
+      changePct,
+      share,
+      price,
     }];
   }, []);
 }
