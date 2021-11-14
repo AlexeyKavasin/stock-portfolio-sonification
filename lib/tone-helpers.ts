@@ -50,9 +50,9 @@ export class SequencePattern {
   }
 
   public build(
+    patternType?: string,
     transposeNote?: number,
     noteDuration?: string,
-    patternType?: string,
     tempo?: string,
   ) {
     this.synth = new Tone.Synth({

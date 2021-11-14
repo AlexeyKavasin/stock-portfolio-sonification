@@ -4,27 +4,29 @@ import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { credentials } from '../credentials';
 import { composeStockData, IStockData } from '../utils/composeStockData';
+import { isDataUpdated } from '../utils/isDataUpdated';
 import { SequencePattern } from '../lib/tone-helpers';
 import styles from '../styles/Main.module.css'; 
 
 const fetcher = (...args: [any]) => fetch(...args).then(res => res.json())
 
-function Index() {
+const Index = () => {
   // TODO
   // data doesn't change on saturdays and sundays, no need to fetch
-  const { data } = useSWR(credentials.web_api, fetcher, { refreshInterval: 30000 });
+  // 1 hour
+  const { data } = useSWR(credentials.web_api, fetcher, { focusThrottleInterval: 60000 * 60 });
   const [soundOn, turnSoundOn] = useState<boolean>(false);
   const [stockData, setStockData] = useState<IStockData[]>([]);
 
   let interval: NodeJS.Timer | null = null;
   let pattern1: any = null;
 
-  const createAudio = () => {
+  const initializeAudio = () => {
     if (!pattern1) {
       pattern1 = new SequencePattern();
     } else {
       pattern1.destroy();
-      pattern1.build(null, null, null, '8n');
+      pattern1.build(null, null, null, Math.round(Math.random()) > 0 ? '8n': '4n');
     }
   };
 
@@ -35,9 +37,9 @@ function Index() {
 
     interval = setInterval(() => {
       // update with fetched data
-      setStockData(composeStockData(data));
-      createAudio();
-    }, 60000)
+      console.log('update sounds');
+      initializeAudio();
+    }, 10000);
   }
 
   const toggleSound = () => {
@@ -57,12 +59,14 @@ function Index() {
 
   useEffect(() => {
     if (data && !stockData.length) {
-      // and data !== prev.data
       setStockData(composeStockData(data));
-      createAudio();
+      initializeAudio();
       startTimer();
     }
 
+    if (data && isDataUpdated(data, stockData)) {
+      setStockData(composeStockData(data));
+    }
   }, [data, soundOn, stockData])
 
   return (
