@@ -22,11 +22,13 @@ const Index = () => {
   let pattern1: any = null;
 
   const initializeAudio = () => {
+    // TODO map changePct and share
+    // TODO create
     if (!pattern1) {
       pattern1 = new SequencePattern();
     } else {
       pattern1.destroy();
-      pattern1.build(null, null, null, Math.round(Math.random()) > 0 ? '8n': '4n');
+      pattern1.build(null, null, null, '8n');
     }
   };
 
