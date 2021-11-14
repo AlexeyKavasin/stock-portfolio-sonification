@@ -12,7 +12,10 @@
     "googleapis": "^88.2.0",
     "next": "11.1.2",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "swr": "^1.0.1",
+    "tonal": "^2.2.2",
+    "tone": "^14.7.77"
   },
   "devDependencies": {
     "@types/react": "17.0.24",
