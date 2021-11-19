@@ -2,7 +2,7 @@ import * as Tone from 'tone';
 import { Interval, Scale, transpose } from 'tonal';
 import { PatternName } from 'tone/build/esm/event/PatternGenerator';
 
-const sequence = [-4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
+const sequence = [-5, -4, -3, -2, -1, 0, 2, 1, 4, 5];
 const scale = Scale.notes('C3 pentatonic');
 
 function mapNote(noteNumber: number, scale: string[]) {
@@ -20,31 +20,36 @@ function modulo(n: number, length: number) {
 }
 
 export class SequencePattern {
-  private static instance: SequencePattern;
+  private static id: number;
   private transposeNote!: number;
   private noteDuration!: string;
-  private tempo!: string;
+  private tempo: string | undefined;
   private patternType!: string;
   private synth: any;
   private pattern: any;
+  private reverb: any;
+  private reverbDecay: number | undefined;
 
   constructor(
-    patternType = 'up',
+    id = 1,
+    patternType = 'down',
     transposeNote = 0,
-    noteDuration = '8n',
-    tempo = '1n',
+    noteDuration = '16n',
+    tempo = '8n',
+    reverbDecay = 20,
   ) {
 
-    if (SequencePattern.instance) {
-      return SequencePattern.instance;
+    if (id === SequencePattern.id) {
+      console.log('allready exists');
+      return this;
     }
   
-    SequencePattern.instance = this;
-
     this.transposeNote = transposeNote;
     this.noteDuration = noteDuration;
     this.patternType = patternType;
+    this.reverbDecay = reverbDecay;
     this.tempo = tempo;
+    SequencePattern.id = id;
 
     this.build();
   }
@@ -54,23 +59,39 @@ export class SequencePattern {
     transposeNote?: number,
     noteDuration?: string,
     tempo?: string,
+    reverbDecay?: number,
   ) {
-    this.synth = new Tone.Synth({
-      oscillator: {
+    this.reverb = new Tone.Reverb({ decay: reverbDecay || this.reverbDecay });
+
+    this.synth = new Tone.AMSynth({
+      envelope: {
+        attack: 0.75,
+        attackCurve: 'sine',
+        decay: 0.5,
+        decayCurve: 'exponential',
+        sustain: 0.75,
+        release: 0.75,
+        releaseCurve: 'cosine',
+      },
+      modulation: {
         type: 'sine',
-      }
-    });
+      },
+      oscillator: {
+        modulationType: 'sine',
+        type: 'amsine1',
+      },
+    }).connect(this.reverb);
 
     this.pattern = new Tone.Pattern(
       (time, index) => {
         const note = mapNote(sequence[index] + (transposeNote || this.transposeNote), scale);
         this.synth.triggerAttackRelease(note, noteDuration || this.noteDuration, time);
-        console.log(note);
       },
       Array.from(sequence.keys()),
       (patternType || this.patternType) as PatternName
     );
 
+    this.reverb.toDestination();
     this.synth.toDestination();
     this.pattern.interval = tempo || this.tempo;
     this.pattern.start();
@@ -80,5 +101,6 @@ export class SequencePattern {
     this.pattern.stop();
     this.synth = null;
     this.pattern = null;
+    this.reverb = null;
   }
 }

@@ -1,34 +1,44 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as Tone from 'tone';
-import React, { useState, useEffect } from 'react';
-import useSWR from 'swr';
-import { credentials } from '../credentials';
-import { composeStockData, IStockData } from '../utils/composeStockData';
-import { isDataUpdated } from '../utils/isDataUpdated';
+import React, { useState, useEffect, useRef } from 'react';
+// import useSWR from 'swr';
+// import { credentials } from '../credentials';
+// import { composeStockData, IStockData } from '../utils/composeStockData';
+// import { isDataUpdated } from '../utils/isDataUpdated';
 import { SequencePattern } from '../lib/tone-helpers';
 import styles from '../styles/Main.module.css'; 
 
-const fetcher = (...args: [any]) => fetch(...args).then(res => res.json())
+// const fetcher = (...args: [any]) => fetch(...args).then(res => res.json())
+
+const patternConfig = [
+  ['down', 0, '16n', '8n', 20],
+  ['up', -5, '8n', '8n', 20],
+];
 
 const Index = () => {
   // TODO
   // data doesn't change on saturdays and sundays, no need to fetch
   // 1 hour
-  const { data } = useSWR(credentials.web_api, fetcher, { focusThrottleInterval: 60000 * 60 });
+  // const { data, mutate } = useSWR(credentials.web_api, fetcher);
   const [soundOn, turnSoundOn] = useState<boolean>(false);
-  const [stockData, setStockData] = useState<IStockData[]>([]);
+  const [patterns, setPatterns] = useState<any[]>([]);
+  // const [stockData, setStockData] = useState<IStockData[]>([]);
 
   let interval: NodeJS.Timer | null = null;
-  let pattern1: any = null;
 
-  const initializeAudio = () => {
-    // TODO map changePct and share
-    // TODO create
-    if (!pattern1) {
-      pattern1 = new SequencePattern();
+  const createAudio = () => {
+    // TODO create patterns and map with new data changePct and share
+    // id = number, patternType = 'down', transposeNote = 0, noteDuration = '16n', tempo = '8n', reverbDecay = 20,
+    if (!patterns.length) {
+      const pattern1 = new SequencePattern(1, 'down', 0, '16n', '8n', 20);
+      const pattern2 = new SequencePattern(2, 'up', 5, '8n', '8n', 20);
+
+      setPatterns([pattern1, pattern2]);
     } else {
-      pattern1.destroy();
-      pattern1.build(null, null, null, '8n');
+      patterns.forEach((p, ind) => {
+        p.destroy();
+        p.build(...patternConfig[ind]);
+      });
     }
   };
 
@@ -38,11 +48,10 @@ const Index = () => {
     }
 
     interval = setInterval(() => {
-      // update with fetched data
-      console.log('update sounds');
-      initializeAudio();
-    }, 10000);
-  }
+      // send req and update with fetched data
+      // mutate();
+    }, 30000);
+  };
 
   const toggleSound = () => {
     turnSoundOn(!soundOn);
@@ -59,24 +68,32 @@ const Index = () => {
     }
   };
 
-  useEffect(() => {
-    if (data && !stockData.length) {
-      setStockData(composeStockData(data));
-      initializeAudio();
-      startTimer();
-    }
+  // useEffect(() => {
+  //   initial data - start timer
+  //   if (data && !stockData.length) {
+  //     setStockData(composeStockData(data));
+  //     startTimer();
+  //   }
+  //
+  //   new data - updateAudio
+  //   if (data && isDataUpdated(data, stockData)) {
+  //     setStockData(composeStockData(data));
+  //     createAudio();
+  //   }
+  // }, [data, stockData])
 
-    if (data && isDataUpdated(data, stockData)) {
-      setStockData(composeStockData(data));
+  useEffect(() => {
+    if (soundOn) {
+      createAudio();
     }
-  }, [data, soundOn, stockData])
+  }, [soundOn]);
 
   return (
     <div>
       <main className={styles.main}>
         <button onClick={toggleSound}>{soundOn ? 'Sound off' : 'Sound on'}</button>
       </main>
-      {stockData && stockData.length ? (
+      {/* {stockData && stockData.length ? (
         <footer>
           <ul className={styles.stockList}>
             {stockData.map((s) => {
@@ -88,9 +105,9 @@ const Index = () => {
             })}
           </ul>
         </footer>
-      ) : null}
+      ) : null} */}
     </div>
-  )
-}
+  );
+};
 
 export default Index;

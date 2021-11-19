@@ -8,5 +8,7 @@ export function isDataUpdated(
     return false;
   }
 
+  console.log(JSON.stringify(newData.stocks) !== JSON.stringify(currentData) ? 'updated data' : '');
+
   return JSON.stringify(newData.stocks) !== JSON.stringify(currentData);
 }
