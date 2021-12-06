@@ -5,15 +5,10 @@ import React, { useState, useEffect, useRef } from 'react';
 // import { credentials } from '../credentials';
 // import { composeStockData, IStockData } from '../utils/composeStockData';
 // import { isDataUpdated } from '../utils/isDataUpdated';
-import { SequencePattern } from '../lib/tone-helpers';
 import styles from '../styles/Main.module.css'; 
+import { SequenceCreator } from '../lib/sequenceCreator';
 
 // const fetcher = (...args: [any]) => fetch(...args).then(res => res.json())
-
-const patternConfig = [
-  ['down', 0, '16n', '8n', 20],
-  ['up', -5, '8n', '8n', 20],
-];
 
 const Index = () => {
   // TODO
@@ -21,24 +16,19 @@ const Index = () => {
   // 1 hour
   // const { data, mutate } = useSWR(credentials.web_api, fetcher);
   const [soundOn, turnSoundOn] = useState<boolean>(false);
-  const [patterns, setPatterns] = useState<any[]>([]);
+  const [sequence, setSequence] = useState<any>(null);
   // const [stockData, setStockData] = useState<IStockData[]>([]);
 
   let interval: NodeJS.Timer | null = null;
 
   const createAudio = () => {
-    // TODO create patterns and map with new data changePct and share
-    // id = number, patternType = 'down', transposeNote = 0, noteDuration = '16n', tempo = '8n', reverbDecay = 20,
-    if (!patterns.length) {
-      const pattern1 = new SequencePattern(1, 'down', 0, '16n', '8n', 20);
-      const pattern2 = new SequencePattern(2, 'up', 5, '8n', '8n', 20);
-
-      setPatterns([pattern1, pattern2]);
+    if (!sequence) {
+      // create with stockData
+      // setSequence(new SequenceCreator(stockData));
+      setSequence(new SequenceCreator());
     } else {
-      patterns.forEach((p, ind) => {
-        p.destroy();
-        p.build(...patternConfig[ind]);
-      });
+      // sequence.update(stockData);
+      sequence.update();
     }
   };
 
