@@ -45,3 +45,13 @@ export function shuffleUniqueAndRepeated(unique: number[], repeated: number[]) {
     return nonEqualToClosest || nonEqualToClosest === 0 ? [...acc, item, nonEqualToClosest] : [...acc, item];
   }, []);
 }
+
+// TODO % instead of hardcoded timesRotated
+export function rotate(arr: number[], offset: number) {
+  const n = offset % arr.length;
+
+  return [
+    ...arr.slice(n, arr.length),
+    ...arr.slice(0, n),
+  ];
+}

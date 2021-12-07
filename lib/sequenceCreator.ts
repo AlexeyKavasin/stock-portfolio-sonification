@@ -1,13 +1,12 @@
 import * as Tone from 'tone';
 import { Scale } from 'tonal';
 import { PatternName } from 'tone/build/esm/event/PatternGenerator';
-import { mapNote } from './toneUtils';
+import { mapNote, rotate } from './toneUtils';
 
 const scale = Scale.notes('C3 pentatonic');
 
 const patternConfig = [
-  [[0, 1, 2, 3, 4], 'down', '16n', '8n', 20],
-  [[5, 6, 7], 'up', '8n', '8n', 20],
+  [[0, 1, 2, 3, 4], 2, 'up', '8n', '8n', 20],
 ];
 
 export class SequenceCreator {
@@ -26,8 +25,7 @@ export class SequenceCreator {
   public startSequence() {
     if (!this.patterns.length) {
       this.patterns = [
-        new SequencePattern(this.sequence, 1, 'down', '16n', '8n', 20),
-        new SequencePattern(this.sequence, 2, 'up', '8n', '8n', 20)
+        new SequencePattern(this.sequence, 1, 'up', '16n', '4n', 20),
       ];
     } else {
       this.update();
@@ -107,13 +105,20 @@ export class SequencePattern {
       },
     }).connect(this.reverb);
 
+    let timesRotated = 0;
+    let preparedSequence = sequence;
+  
     this.pattern = new Tone.Pattern(
       (time, index) => {
-        const note = mapNote(sequence[index], scale);
+        if (index === sequence.length - 1) {
+          preparedSequence = rotate(sequence, timesRotated++);
+        }
+
+        const note = mapNote(preparedSequence[index], scale);
         this.synth.triggerAttackRelease(note, noteDuration, time);
       },
       Array.from(this.sequence.keys()),
-      (patternType || this.patternType) as PatternName
+      patternType as PatternName
     );
 
     this.reverb.toDestination();

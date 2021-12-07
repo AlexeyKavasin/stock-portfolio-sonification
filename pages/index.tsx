@@ -1,23 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as Tone from 'tone';
 import React, { useState, useEffect, useRef } from 'react';
-// import useSWR from 'swr';
-// import { credentials } from '../credentials';
-// import { composeStockData, IStockData } from '../utils/composeStockData';
-// import { isDataUpdated } from '../utils/isDataUpdated';
-import styles from '../styles/Main.module.css'; 
+import useSWR from 'swr';
+import { credentials } from '../credentials';
+import { composeStockData, IStockData } from '../utils/composeStockData';
+import { isDataUpdated } from '../utils/isDataUpdated';
 import { SequenceCreator } from '../lib/sequenceCreator';
+import styles from '../styles/Main.module.css'; 
 
-// const fetcher = (...args: [any]) => fetch(...args).then(res => res.json())
+const REQUEST_INTERVAL = 1000 * 60 * 5;
+const fetcher = (...args: [any]) => fetch(...args).then(res => res.json());
 
 const Index = () => {
   // TODO
   // data doesn't change on saturdays and sundays, no need to fetch
-  // 1 hour
-  // const { data, mutate } = useSWR(credentials.web_api, fetcher);
+  const { data, mutate } = useSWR(credentials.web_api, fetcher);
   const [soundOn, turnSoundOn] = useState<boolean>(false);
   const [sequence, setSequence] = useState<any>(null);
-  // const [stockData, setStockData] = useState<IStockData[]>([]);
+  const [stockData, setStockData] = useState<IStockData[]>([]);
 
   let interval: NodeJS.Timer | null = null;
 
@@ -39,8 +39,8 @@ const Index = () => {
 
     interval = setInterval(() => {
       // send req and update with fetched data
-      // mutate();
-    }, 30000);
+      mutate();
+    }, REQUEST_INTERVAL);
   };
 
   const toggleSound = () => {
@@ -58,32 +58,29 @@ const Index = () => {
     }
   };
 
-  // useEffect(() => {
-  //   initial data - start timer
-  //   if (data && !stockData.length) {
-  //     setStockData(composeStockData(data));
-  //     startTimer();
-  //   }
-  //
-  //   new data - updateAudio
-  //   if (data && isDataUpdated(data, stockData)) {
-  //     setStockData(composeStockData(data));
-  //     createAudio();
-  //   }
-  // }, [data, stockData])
-
   useEffect(() => {
+    // initial data -> start timer
+    if (data && !stockData.length) {
+      setStockData(composeStockData(data));
+      startTimer();
+    }
+  
+    // new data -> updateAudio
+    if (data && isDataUpdated(data, stockData)) {
+      setStockData(composeStockData(data));
+    }
+
     if (soundOn) {
       createAudio();
     }
-  }, [soundOn]);
+  }, [data, stockData, soundOn]);
 
   return (
     <div>
       <main className={styles.main}>
         <button onClick={toggleSound}>{soundOn ? 'Sound off' : 'Sound on'}</button>
       </main>
-      {/* {stockData && stockData.length ? (
+      {stockData && stockData.length ? (
         <footer>
           <ul className={styles.stockList}>
             {stockData.map((s) => {
@@ -95,7 +92,7 @@ const Index = () => {
             })}
           </ul>
         </footer>
-      ) : null} */}
+      ) : null}
     </div>
   );
 };
