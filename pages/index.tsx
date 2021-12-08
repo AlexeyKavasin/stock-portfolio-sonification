@@ -25,7 +25,7 @@ const Index = () => {
     if (!sequence) {
       // create with stockData
       // setSequence(new SequenceCreator(stockData));
-      setSequence(new SequenceCreator());
+      setSequence(new SequenceCreator(stockData));
     } else {
       // sequence.update(stockData);
       sequence.update();

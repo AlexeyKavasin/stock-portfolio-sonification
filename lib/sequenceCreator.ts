@@ -1,7 +1,7 @@
 import * as Tone from 'tone';
 import { Scale } from 'tonal';
 import { PatternName } from 'tone/build/esm/event/PatternGenerator';
-import { mapNote, rotate } from './toneUtils';
+import { composeConfig, mapNote, rotate } from './toneUtils';
 
 const scale = Scale.notes('C3 pentatonic');
 
@@ -20,14 +20,22 @@ export class SequenceCreator {
 
   constructor(data?: any) {
     // compose config from data
-    // this.sequence = composeConfig(data)
+    // this.config = composeConfig(data)
+    // mapping todos
+    // 1. sequence depends on changePct and share in portfolio
+    // 2. patternType depends on total portfolio up or down
+    // 3. tempo depends on change on next reload, the bigger the faster
+    const { patternType, sequence } = composeConfig(data);
+
+    console.log(patternType, sequence);
+
     this.config = {
       id: `id-${new Date().getTime()}`,
       noteDuration: '16n',
-      patternType: 'up',
+      patternType,
       reverbDecay: 20,
-      sequence: [0, 1, 2, 3, 4],
-      tempo: '4n',
+      sequence,
+      tempo: '8n',
     };
     this.patterns = [];
 
@@ -60,7 +68,7 @@ export class SequencePattern {
 
   constructor(config: ISequenceConfig) {
     if (config.id === SequencePattern.id) {
-      console.log('allready exists');
+      console.log('pattern allready exists');
       return this;
     }
   
