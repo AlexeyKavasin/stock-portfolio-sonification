@@ -5,18 +5,30 @@ import { mapNote, rotate } from './toneUtils';
 
 const scale = Scale.notes('C3 pentatonic');
 
-const patternConfig = [
-  [[0, 1, 2, 3, 4], 2, 'up', '8n', '8n', 20],
-];
+interface ISequenceConfig {
+  id: string;
+  noteDuration: string;
+  patternType: string;
+  reverbDecay: number;
+  sequence: number[];
+  tempo: string;
+}
 
 export class SequenceCreator {
-  private sequence: number[];
+  private config: ISequenceConfig;
   private patterns: any[];
 
   constructor(data?: any) {
-    // compose sequence from data
-    // this.sequence = composeSequence(data)
-    this.sequence = [-5, -4, -5, -3, -5, -2, -4, -1, 0, 1, 2, 3, 4];
+    // compose config from data
+    // this.sequence = composeConfig(data)
+    this.config = {
+      id: `id-${new Date().getTime()}`,
+      noteDuration: '16n',
+      patternType: 'up',
+      reverbDecay: 20,
+      sequence: [0, 1, 2, 3, 4],
+      tempo: '4n',
+    };
     this.patterns = [];
 
     this.startSequence();
@@ -25,65 +37,41 @@ export class SequenceCreator {
   public startSequence() {
     if (!this.patterns.length) {
       this.patterns = [
-        new SequencePattern(this.sequence, 1, 'up', '16n', '4n', 20),
+        new SequencePattern(this.config),
       ];
-    } else {
-      this.update();
     }
   }
 
   public update() {
     // update patterns
-    this.patterns.forEach((p, ind) => {
+    this.patterns.forEach((p) => {
       p.destroy();
-      p.build(...patternConfig[ind]);
+      p.build(this.config);
     });
   }
 }
 
 
 export class SequencePattern {
-  private static id: number;
-  private sequence!: number[];
-  private noteDuration!: string;
-  private tempo: string | undefined;
-  private patternType!: string;
+  private static id: string;
   private synth: any;
   private pattern: any;
   private reverb: any;
-  private reverbDecay: number | undefined;
 
-  constructor(
-    sequence: number[],
-    id: number,
-    patternType: string,
-    noteDuration: string,
-    tempo: string,
-    reverbDecay: number,
-  ) {
-
-    if (id === SequencePattern.id) {
+  constructor(config: ISequenceConfig) {
+    if (config.id === SequencePattern.id) {
       console.log('allready exists');
       return this;
     }
   
-    this.sequence = sequence;
-    this.noteDuration = noteDuration;
-    this.patternType = patternType;
-    this.reverbDecay = reverbDecay;
-    this.tempo = tempo;
-    SequencePattern.id = id;
+    SequencePattern.id = config.id;
 
-    this.build(this.sequence, this.patternType, this.noteDuration, this.tempo, this.reverbDecay);
+    this.build(config);
   }
 
-  public build(
-    sequence: number[],
-    patternType: string,
-    noteDuration: string,
-    tempo: string,
-    reverbDecay: number,
-  ) {
+  public build(config: ISequenceConfig) {
+    const { noteDuration, patternType, reverbDecay, sequence, tempo } = config;
+
     this.reverb = new Tone.Reverb({ decay: reverbDecay });
 
     this.synth = new Tone.AMSynth({
@@ -114,10 +102,10 @@ export class SequencePattern {
           preparedSequence = rotate(sequence, timesRotated++);
         }
 
-        const note = mapNote(preparedSequence[index], scale);
+        const note = mapNote(preparedSequence[index] || sequence[index], scale);
         this.synth.triggerAttackRelease(note, noteDuration, time);
       },
-      Array.from(this.sequence.keys()),
+      Array.from(sequence.keys()),
       patternType as PatternName
     );
 
