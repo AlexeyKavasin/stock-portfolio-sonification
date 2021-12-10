@@ -25,17 +25,12 @@ export class SequenceCreator {
     // 1. sequence depends on changePct and share in portfolio
     // 2. patternType depends on total portfolio up or down
     // 3. tempo depends on change on next reload, the bigger the faster
-    const { patternType, sequence } = composeConfig(data);
-
-    console.log(patternType, sequence);
+    // const { sequence } = composeConfig(data);
+    // console.log(sequence);
 
     this.config = {
+      ...composeConfig(data),
       id: `id-${new Date().getTime()}`,
-      noteDuration: '16n',
-      patternType,
-      reverbDecay: 20,
-      sequence,
-      tempo: '8n',
     };
     this.patterns = [];
 

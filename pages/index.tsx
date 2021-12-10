@@ -78,7 +78,12 @@ const Index = () => {
   return (
     <div>
       <main className={styles.main}>
-        <button onClick={toggleSound}>{soundOn ? 'Sound off' : 'Sound on'}</button>
+        <button
+          disabled={!stockData.length}
+          onClick={toggleSound}
+        >
+          {soundOn ? 'Sound off' : 'Sound on'}
+        </button>
       </main>
       {stockData && stockData.length ? (
         <footer>

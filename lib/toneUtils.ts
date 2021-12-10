@@ -15,38 +15,6 @@ export function modulo(n: number, length: number) {
   return ((n % length) + length) % length;
 }
 
-export function getUniqueAndRepeated(arr: number[]) {
-  const repeated: number[] = [];
-  const unique = arr.reduce((acc: number[], item: number) => {
-    if (acc.indexOf(item) < 0) {
-      return [...acc, item]; 
-    } else {
-      repeated.push(item);
-      return acc;
-    }
-  }, []);
-
-  return { 
-    unique,
-    repeated,
-  };
-}
-
-export function shuffleUniqueAndRepeated(unique: number[], repeated: number[]) {
-  return unique.reduce((acc: number[], item: number, ind: number) => {
-    // find in repeated[] item that is not equal neither curr, nor curr + 1
-    const nonEqualToClosest = repeated.find((el, i) => {
-      if (el !== unique[ind] && el !== unique[ind + 1]) {
-        repeated.splice(i, 1);
-
-        return el;
-      }
-    });
-
-    return nonEqualToClosest || nonEqualToClosest === 0 ? [...acc, item, nonEqualToClosest] : [...acc, item];
-  }, []);
-}
-
 export function rotate(arr: number[], offset: number) {
   const n = offset % arr.length;
 
@@ -93,10 +61,8 @@ export function generateSteps(data: IStockData[], isTotalUp: boolean) {
     });
 }
 
-export function shuffleSteps(steps: number[]) {
-  const { unique, repeated } = getUniqueAndRepeated(steps);
-
-  return shuffleUniqueAndRepeated(unique, repeated);
+export function trimMultipleOfFive(arr: number[]) {
+  return arr.slice(0, arr.length - arr.length % 5);
 }
 
 export function composeConfig(data: IStockData[]) {
@@ -104,14 +70,20 @@ export function composeConfig(data: IStockData[]) {
   // + 1. check if in total all goes up or down
   // + 2. sort. if down - descending, if up - ascending
   // + 3. map and generate steps depending on share - bigger share - more notes
-  // TODO think on step 3 and shuffle function
+  // + 4. remove duplicates following notes
+  // + 5. make % 5 if not
   const isTotalUp = Boolean(data.reduce((acc, item) => acc + item.changePct, 0) > 0);
-  const arrWithSteps = generateSteps(data, isTotalUp);
-  const sortedByChangePct = arrWithSteps.sort(isTotalUp ? sortByChangePctAscending : sortByChangePctDescending);
-  const steps = sortedByChangePct.reduce((acc: number[], item) => [...acc, ...item.steps], []);
+  const steps = generateSteps(data, isTotalUp)
+    .sort(isTotalUp ? sortByChangePctAscending : sortByChangePctDescending)
+    .reduce((acc: number[], item) => [...acc, ...item.steps], [])
+    .filter((item, ind, arr) => item !== arr[ind + 1]); // filter following duplicates
+
 
   return {
-    patternType: isTotalUp ? 'up' : 'down',
-    sequence: shuffleSteps(steps),
+    noteDuration: '16n',
+    patternType: 'alternateUp',
+    reverbDecay: 10,
+    sequence: trimMultipleOfFive(steps),
+    tempo: '8n.',
   };
 }
