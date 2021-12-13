@@ -16,41 +16,33 @@ interface ISequenceConfig {
 
 export class SequenceCreator {
   private config: ISequenceConfig;
-  private patterns: any[];
+  private pattern: any;
 
   constructor(data?: any) {
-    // compose config from data
-    // this.config = composeConfig(data)
     // mapping todos
-    // 1. sequence depends on changePct and share in portfolio
-    // 2. patternType depends on total portfolio up or down
+    // + 1. sequence depends on changePct and share in portfolio
+    // + 2. patternType depends on total portfolio up or down
     // 3. tempo depends on change on next reload, the bigger the faster
-    // const { sequence } = composeConfig(data);
-    // console.log(sequence);
 
+    this.pattern = null;
     this.config = {
       ...composeConfig(data),
       id: `id-${new Date().getTime()}`,
     };
-    this.patterns = [];
 
     this.startSequence();
   }
 
   public startSequence() {
-    if (!this.patterns.length) {
-      this.patterns = [
-        new SequencePattern(this.config),
-      ];
+    if (!this.pattern) {
+      this.pattern = new SequencePattern(this.config);
     }
   }
 
   public update() {
     // update patterns
-    this.patterns.forEach((p) => {
-      p.destroy();
-      p.build(this.config);
-    });
+    this.pattern.destroy();
+    this.pattern.build(this.config);
   }
 }
 
@@ -60,6 +52,7 @@ export class SequencePattern {
   private synth: any;
   private pattern: any;
   private reverb: any;
+  private eq: any;
 
   constructor(config: ISequenceConfig) {
     if (config.id === SequencePattern.id) {
@@ -74,18 +67,20 @@ export class SequencePattern {
 
   public build(config: ISequenceConfig) {
     const { noteDuration, patternType, reverbDecay, sequence, tempo } = config;
+    let timesRotated = 0;
+    let preparedSequence = sequence;
 
-    this.reverb = new Tone.Reverb({ decay: reverbDecay });
-
+    this.eq = new Tone.EQ3({ low: -5, mid: -5, high: 5 });
+    this.reverb = new Tone.Reverb({ decay: reverbDecay, preDelay: 0.15 });
     this.synth = new Tone.AMSynth({
       envelope: {
-        attack: 0.75,
+        attack: 0.5,
         attackCurve: 'sine',
         decay: 0.5,
         decayCurve: 'exponential',
-        sustain: 0.75,
-        release: 0.75,
-        releaseCurve: 'cosine',
+        sustain: 0.4,
+        release: 0.25,
+        releaseCurve: 'sine',
       },
       modulation: {
         type: 'sine',
@@ -94,10 +89,7 @@ export class SequencePattern {
         modulationType: 'sine',
         type: 'amsine1',
       },
-    }).connect(this.reverb);
-
-    let timesRotated = 0;
-    let preparedSequence = sequence;
+    }).chain(this.reverb, this.eq);
   
     this.pattern = new Tone.Pattern(
       (time, index) => {
@@ -112,14 +104,16 @@ export class SequencePattern {
       patternType as PatternName
     );
 
-    this.reverb.toDestination();
     this.synth.toDestination();
+    this.eq.toDestination();
+    this.reverb.toDestination();
     this.pattern.interval = tempo;
     this.pattern.start();
   }
 
   public destroy() {
     this.pattern.stop();
+    this.eq = null;
     this.synth = null;
     this.pattern = null;
     this.reverb = null;

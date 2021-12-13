@@ -80,10 +80,11 @@ export function composeConfig(data: IStockData[]) {
 
 
   return {
-    noteDuration: '16n',
+    // 1 : 4 [{ noteDuration: 32, tempo: 8 }, { noteDuration: 16, tempo: 4n }]
+    noteDuration: '32n',
     patternType: 'alternateUp',
-    reverbDecay: 10,
+    reverbDecay: 20,
     sequence: trimMultipleOfFive(steps),
-    tempo: '8n.',
+    tempo: '8n',
   };
 }
