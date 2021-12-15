@@ -78,8 +78,8 @@ export class SequencePattern {
         attackCurve: 'sine',
         decay: 0.5,
         decayCurve: 'exponential',
-        sustain: 0.4,
-        release: 0.25,
+        sustain: 0.5,
+        release: 0.35,
         releaseCurve: 'sine',
       },
       modulation: {

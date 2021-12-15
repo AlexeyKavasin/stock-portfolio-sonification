@@ -23,12 +23,9 @@ const Index = () => {
 
   const createAudio = () => {
     if (!sequence) {
-      // create with stockData
-      // setSequence(new SequenceCreator(stockData));
       setSequence(new SequenceCreator(stockData));
     } else {
-      // sequence.update(stockData);
-      sequence.update();
+      sequence.update(stockData);
     }
   };
 
@@ -47,7 +44,6 @@ const Index = () => {
     turnSoundOn(!soundOn);
 
     if (!soundOn) {
-      // play sound
       if (Tone.context.state !== 'running') {
         Tone.context.resume();
       }
