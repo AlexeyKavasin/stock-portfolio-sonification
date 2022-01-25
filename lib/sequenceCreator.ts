@@ -70,15 +70,15 @@ export class SequencePattern {
     let timesRotated = 0;
     let preparedSequence = sequence;
 
-    this.eq = new Tone.EQ3({ low: -5, mid: -5, high: 5 });
+    this.eq = new Tone.EQ3({ low: -50, mid: -15, high: 15 });
     this.reverb = new Tone.Reverb({ decay: reverbDecay, preDelay: 0.15 });
     this.synth = new Tone.AMSynth({
       envelope: {
-        attack: 0.5,
+        attack: 0.35,
         attackCurve: 'sine',
         decay: 0.5,
         decayCurve: 'exponential',
-        sustain: 0.5,
+        sustain: 0.35,
         release: 0.35,
         releaseCurve: 'sine',
       },

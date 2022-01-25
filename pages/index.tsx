@@ -23,6 +23,7 @@ const Index = () => {
 
   const createAudio = () => {
     if (!sequence) {
+      // create bg tone?
       setSequence(new SequenceCreator(stockData));
     } else {
       sequence.update(stockData);

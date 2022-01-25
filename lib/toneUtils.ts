@@ -72,6 +72,7 @@ export function composeConfig(data: IStockData[]) {
   // + 3. map and generate steps depending on share - bigger share - more notes
   // + 4. remove duplicates following notes
   // + 5. make % 5 if not
+  // 6. offSet on condition e.g. [-5, -4, -3] => [-7, -6, -5]; [5, 4, 3] => [6, 5, 4] ?
   const isTotalUp = Boolean(data.reduce((acc, item) => acc + item.changePct, 0) > 0);
   const steps = generateSteps(data, isTotalUp)
     .sort(isTotalUp ? sortByChangePctAscending : sortByChangePctDescending)
@@ -80,7 +81,7 @@ export function composeConfig(data: IStockData[]) {
 
 
   return {
-    // 1 : 4 [{ noteDuration: 32, tempo: 8 }, { noteDuration: 16, tempo: 4n }]
+    // 1 : 4 [{ noteDuration: 32n, tempo: 8n }, { noteDuration: 16n, tempo: 4n }]
     noteDuration: '32n',
     patternType: 'alternateUp',
     reverbDecay: 20,
