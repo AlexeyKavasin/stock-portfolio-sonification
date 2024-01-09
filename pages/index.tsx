@@ -1,15 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as Tone from 'tone';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { credentials } from '../credentials';
 import { composeStockData, IStockData } from '../utils/composeStockData';
 import { isDataUpdated } from '../utils/isDataUpdated';
 import { SequenceCreator } from '../lib/sequenceCreator';
-import styles from '../styles/Main.module.css'; 
+import styles from '../styles/Main.module.css';
 
 const REQUEST_INTERVAL = 1000 * 60 * 5;
-const fetcher = (...args: [any]) => fetch(...args).then(res => res.json());
+const fetcher = (...args: [any]) => fetch(...args).then((res) => res.json());
 
 const Index = () => {
   // TODO
@@ -19,7 +19,7 @@ const Index = () => {
   const [sequence, setSequence] = useState<any>(null);
   const [stockData, setStockData] = useState<IStockData[]>([]);
 
-  let interval: NodeJS.Timer | null = null;
+  let interval: any = null;
 
   const createAudio = () => {
     if (!sequence) {
@@ -61,7 +61,7 @@ const Index = () => {
       setStockData(composeStockData(data));
       startTimer();
     }
-  
+
     // new data -> updateAudio
     if (data && isDataUpdated(data, stockData)) {
       setStockData(composeStockData(data));
@@ -75,10 +75,7 @@ const Index = () => {
   return (
     <div>
       <main className={styles.main}>
-        <button
-          disabled={!stockData.length}
-          onClick={toggleSound}
-        >
+        <button disabled={!stockData.length} onClick={toggleSound}>
           {soundOn ? 'Sound off' : 'Sound on'}
         </button>
       </main>
@@ -86,11 +83,16 @@ const Index = () => {
         <footer>
           <ul className={styles.stockList}>
             {stockData.map((s) => {
-              return <li
-                key={`stock-${s.ticker}`}
-                className={`${styles.stockListItem} ${s.changePct >= 0 ? styles.green : styles.red}`}>
-                {s.ticker} {s.changePct}%
-              </li>;
+              return (
+                <li
+                  key={`stock-${s.ticker}`}
+                  className={`${styles.stockListItem} ${
+                    s.changePct >= 0 ? styles.green : styles.red
+                  }`}
+                >
+                  {s.ticker} {s.changePct}%
+                </li>
+              );
             })}
           </ul>
         </footer>

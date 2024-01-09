@@ -59,7 +59,7 @@ export class SequencePattern {
       console.log('pattern allready exists');
       return this;
     }
-  
+
     SequencePattern.id = config.id;
 
     this.build(config);
@@ -70,7 +70,7 @@ export class SequencePattern {
     let timesRotated = 0;
     let preparedSequence = sequence;
 
-    this.eq = new Tone.EQ3({ low: -50, mid: -15, high: 15 });
+    this.eq = new Tone.EQ3({ low: -50, mid: 0, high: 15 });
     this.reverb = new Tone.Reverb({ decay: reverbDecay, preDelay: 0.15 });
     this.synth = new Tone.AMSynth({
       envelope: {
@@ -90,7 +90,7 @@ export class SequencePattern {
         type: 'amsine1',
       },
     }).chain(this.reverb, this.eq);
-  
+
     this.pattern = new Tone.Pattern(
       (time, index) => {
         if (index === sequence.length - 1) {

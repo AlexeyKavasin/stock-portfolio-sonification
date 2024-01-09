@@ -5,7 +5,7 @@ export function mapNote(noteNumber: number, scale: string[]) {
   const i = modulo(noteNumber, scale.length);
   const note = scale[i];
   const octaveTranspose = Math.floor(noteNumber / scale.length);
-  const interval = Interval.fromSemitones(octaveTranspose * 12);  
+  const interval = Interval.fromSemitones(octaveTranspose * 12);
 
   return transpose(note, interval);
 }
@@ -82,10 +82,10 @@ export function composeConfig(data: IStockData[]) {
 
   return {
     // 1 : 4 [{ noteDuration: 32n, tempo: 8n }, { noteDuration: 16n, tempo: 4n }]
-    noteDuration: '32n',
+    noteDuration: '16n',
     patternType: 'alternateUp',
     reverbDecay: 20,
     sequence: trimMultipleOfFive(steps),
-    tempo: '8n',
+    tempo: '4n',
   };
 }
