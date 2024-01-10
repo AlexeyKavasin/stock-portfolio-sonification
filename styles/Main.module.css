@@ -26,6 +26,13 @@
   color: lightcoral;
 }
 
+.soundToggle {
+  font-size: 5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 .stockListWrapper {
   position: fixed;
   bottom: 0;
@@ -43,10 +50,24 @@
   white-space: nowrap;
   padding-right: 100%;
   box-sizing: content-box;
+  animation-name: ticker;
   animation-iteration-count: infinite;
   animation-timing-function: linear;
-  animation-name: ticker;
   animation-duration: 30s;
+}
+
+.loader {
+  font-size: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.loader:before {
+  content: '';
+  color: #122222;
+  animation: loading 700ms steps(1, end) infinite;
 }
 
 .stockListItem {
@@ -64,5 +85,21 @@
   100% {
     -webkit-transform: translate3d(-100%, 0, 0);
     transform: translate3d(-100%, 0, 0);
+  }
+}
+
+@keyframes loading {
+  0%,
+  100% {
+    content: '◴';
+  }
+  25% {
+    content: '◷';
+  }
+  50% {
+    content: '◶';
+  }
+  75% {
+    content: '◵';
   }
 }

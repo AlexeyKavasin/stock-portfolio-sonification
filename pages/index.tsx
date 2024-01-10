@@ -14,7 +14,7 @@ const fetcher = (...args: [any]) => fetch(...args).then((res) => res.json());
 const Index = () => {
   // TODO
   // data doesn't change on saturdays and sundays, no need to fetch
-  const { data, mutate } = useSWR(credentials.web_api, fetcher);
+  const { data, mutate, isLoading } = useSWR(credentials.web_api, fetcher);
   const [soundOn, turnSoundOn] = useState<boolean>(false);
   const [sequence, setSequence] = useState<any>(null);
   const [stockData, setStockData] = useState<IStockData[]>([]);
@@ -75,9 +75,17 @@ const Index = () => {
   return (
     <div>
       <main className={styles.main}>
-        <button disabled={!stockData.length} onClick={toggleSound}>
-          {soundOn ? 'Sound off' : 'Sound on'}
-        </button>
+        {isLoading ? (
+          <div className={styles.loader}></div>
+        ) : (
+          <button
+            className={styles.soundToggle}
+            disabled={!stockData.length}
+            onClick={toggleSound}
+          >
+            {soundOn ? '🔊' : '🔇'}
+          </button>
+        )}
       </main>
       {stockData && stockData.length ? (
         <footer>
