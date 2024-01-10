@@ -86,6 +86,6 @@ export function composeConfig(data: IStockData[]) {
     patternType: 'alternateUp',
     reverbDecay: 20,
     sequence: trimMultipleOfFive(steps),
-    tempo: '4n',
+    tempo: '8n',
   };
 }

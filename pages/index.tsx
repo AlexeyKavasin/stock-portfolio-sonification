@@ -81,20 +81,22 @@ const Index = () => {
       </main>
       {stockData && stockData.length ? (
         <footer>
-          <ul className={styles.stockList}>
-            {stockData.map((s) => {
-              return (
-                <li
-                  key={`stock-${s.ticker}`}
-                  className={`${styles.stockListItem} ${
-                    s.changePct >= 0 ? styles.green : styles.red
-                  }`}
-                >
-                  {s.ticker} {s.changePct}%
-                </li>
-              );
-            })}
-          </ul>
+          <div className={styles.stockListWrapper}>
+            <ul className={styles.stockList}>
+              {stockData.map((s) => {
+                return (
+                  <li
+                    key={`stock-${s.ticker}`}
+                    className={`${styles.stockListItem} ${
+                      s.changePct >= 0 ? styles.green : styles.red
+                    }`}
+                  >
+                    {s.ticker} {s.changePct}%
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </footer>
       ) : null}
     </div>
