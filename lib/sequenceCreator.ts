@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as Tone from 'tone';
 import { Scale } from 'tonal';
 import { PatternName } from 'tone/build/esm/event/PatternGenerator';
@@ -22,7 +23,6 @@ export class SequenceCreator {
     // mapping todos
     // + 1. sequence depends on changePct and share in portfolio
     // + 2. patternType depends on total portfolio up or down
-    // 3. tempo depends on change on next reload, the bigger the faster
 
     this.pattern = null;
     this.config = {

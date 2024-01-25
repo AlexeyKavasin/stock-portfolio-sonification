@@ -6,16 +6,19 @@ import { credentials } from '../credentials';
 import { composeStockData, IStockData } from '../utils/composeStockData';
 import { isDataUpdated } from '../utils/isDataUpdated';
 import { SequenceCreator } from '../lib/sequenceCreator';
+import { StockList } from '../components/stockList';
+import { SoundButton } from '../components/soundButton';
 import styles from '../styles/Main.module.css';
 
 const REQUEST_INTERVAL = 1000 * 60 * 5;
 const fetcher = (...args: [any]) => fetch(...args).then((res) => res.json());
 
 const Index = () => {
-  // TODO
+  // todos
   // data doesn't change on saturdays and sundays, no need to fetch
   const { data, mutate, isLoading } = useSWR(credentials.web_api, fetcher);
   const [soundOn, turnSoundOn] = useState<boolean>(false);
+  // todo use useSequence
   const [sequence, setSequence] = useState<any>(null);
   const [stockData, setStockData] = useState<IStockData[]>([]);
 
@@ -75,32 +78,10 @@ const Index = () => {
   return (
     <div>
       <main className={styles.main}>
-        {isLoading ? (
-          <div className={styles.loader}></div>
-        ) : (
-          <button className={styles.soundToggle} disabled={!stockData.length} onClick={toggleSound}>
-            {soundOn ? '🔊' : '🔇'}
-          </button>
-        )}
+        {isLoading && <div className={styles.loader}></div>}
+        {!isLoading && <SoundButton isSoundOn={soundOn} onToggleSound={toggleSound} disabled={!stockData.length} />}
       </main>
-      {stockData && stockData.length ? (
-        <footer>
-          <div className={styles.stockListWrapper}>
-            <ul className={styles.stockList}>
-              {stockData.map((s) => {
-                return (
-                  <li
-                    key={`stock-${s.ticker}`}
-                    className={`${styles.stockListItem} ${s.changePct >= 0 ? styles.green : styles.red}`}
-                  >
-                    {s.ticker} {s.changePct}%
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </footer>
-      ) : null}
+      <footer>{Boolean(stockData && stockData.length) && <StockList stockData={stockData} />}</footer>
     </div>
   );
 };

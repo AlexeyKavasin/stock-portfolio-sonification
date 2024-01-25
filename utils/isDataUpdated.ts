@@ -1,14 +1,12 @@
 import { IStockData } from './composeStockData';
 
 export function isDataUpdated(
-  newData: { stocks: IStockData[]},
+  newData: { stocks: IStockData[] },
   currentData: IStockData[]
 ) {
   if (!newData || !newData.stocks || !newData.stocks.length || !currentData || !currentData.length) {
     return false;
   }
-
-  console.log(JSON.stringify(newData.stocks) !== JSON.stringify(currentData) ? 'updated data' : '');
 
   return JSON.stringify(newData.stocks) !== JSON.stringify(currentData);
 }
