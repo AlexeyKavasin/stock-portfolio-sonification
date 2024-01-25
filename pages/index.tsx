@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as Tone from 'tone';
 import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
@@ -78,11 +78,7 @@ const Index = () => {
         {isLoading ? (
           <div className={styles.loader}></div>
         ) : (
-          <button
-            className={styles.soundToggle}
-            disabled={!stockData.length}
-            onClick={toggleSound}
-          >
+          <button className={styles.soundToggle} disabled={!stockData.length} onClick={toggleSound}>
             {soundOn ? '🔊' : '🔇'}
           </button>
         )}
@@ -95,9 +91,7 @@ const Index = () => {
                 return (
                   <li
                     key={`stock-${s.ticker}`}
-                    className={`${styles.stockListItem} ${
-                      s.changePct >= 0 ? styles.green : styles.red
-                    }`}
+                    className={`${styles.stockListItem} ${s.changePct >= 0 ? styles.green : styles.red}`}
                   >
                     {s.ticker} {s.changePct}%
                   </li>
